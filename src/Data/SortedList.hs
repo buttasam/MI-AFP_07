@@ -40,7 +40,8 @@ instance Ord a => Monoid (SortedList a) where
 
 instance Functor SortedList where
   -- | Apply function over sorted list
-  fmap = undefined
+  fmap _ Nil = Nil
+  fmap f l@(l1 :<$ xl) = (f l1) :<$ (fmap f xl)
 
 instance Applicative SortedList where
   pure  = undefined
