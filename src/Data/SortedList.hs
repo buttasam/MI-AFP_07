@@ -29,10 +29,13 @@ smallest _ = error "SortedList: Nil"
 instance Ord a => Semigroup (SortedList a) where
   -- | Merge two sorted lists
   -- DO NOT USE Data.List and its sort! it should be O(n+m) complexity
-  (<>) = undefined
+  (<>) l Nil = l
+  (<>) Nil l = l
+  (<>) l@(l1 :<$ xl) m@(m1 :<$ xm) = if l1 < m1 then l1 :<$ ((<>) xl m) else m1 :<$ ((<>) l xm)
+
 
 instance Ord a => Monoid (SortedList a) where
-  mempty = undefined
+  mempty = Nil
   mappend = (<>)
 
 instance Functor SortedList where
