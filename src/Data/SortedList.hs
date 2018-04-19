@@ -44,9 +44,15 @@ instance Functor SortedList where
   fmap f l@(l1 :<$ xl) = (f l1) :<$ (fmap f xl)
 
 instance Applicative SortedList where
-  pure  = undefined
+  pure a = a :<$ Nil
   -- | Apply all functions to elements in sorted list
-  (<*>) = undefined
+  (<*>) Nil _ = Nil
+  (<*>) _ Nil = Nil
+  (<*>) f@(f1 :<$ xf) l@(l1 :<$ xl) = (fmap f1 l) `myConcat` (xf <*> l)
+    where
+      myConcat :: SortedList a -> SortedList a -> SortedList a
+      myConcat l@(l1 :<$ Nil) m = l1 :<$ m
+      myConcat l@(l1 :<$ xl) m = l1 :<$ (myConcat xl m)
 
 instance Monad SortedList where
   -- | Apply on sorted list if valid and not empty
