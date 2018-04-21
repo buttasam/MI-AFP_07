@@ -1,6 +1,14 @@
 module Calculator (calculator, calculate) where
 
+import Data.List.Split
+
 type Calculation = Either String Double
+
+
+data Operation = UnaryOp { unName :: String, arg :: Double }
+               | BinaryOp { binName :: String, arg1 :: Double, arg2 :: Double}
+               | Constant { unName :: String }
+               deriving Show
 
 -- Use monads, and functors and/or applicative to make the code simple!
 
@@ -22,6 +30,16 @@ e12  = "No input"
 -- | Function do to the calculation
 calculate :: String -> Calculation
 calculate = undefined
+
+stringToOpration :: String -> Operation
+stringToOpration str
+    | size == 1 = Constant (head arr)
+    | size == 2 = UnaryOp (head arr) (read (arr !! 1))
+    | size == 3 = BinaryOp (head arr) (read (arr !! 1)) (read (arr !! 2))
+    | otherwise = error "invalid input"
+      where
+        arr = splitOn " " str
+        size = length arr
 
 -- | Help for you and the users
 help :: IO ()
