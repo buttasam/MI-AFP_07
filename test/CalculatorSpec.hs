@@ -34,7 +34,7 @@ spec = describe "calculate" $ do
             calculate "SQRT 145" `shouldBe` Right (sqrt 145)
             calculate "LOG 100" `shouldBe` Right 2
             calculate "LOG 1" `shouldBe` Right 0
-            calculate "SIN 0" `shouldBe` Right 1
+            calculate "SIN 0" `shouldBe` Right 0
             calculate "SIN 10" `shouldBe` Right (sin 10)
             calculate "SIN -10" `shouldBe` Right (sin (-10))
             calculate "COS 0" `shouldBe` Right 1

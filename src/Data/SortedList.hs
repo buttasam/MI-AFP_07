@@ -29,21 +29,37 @@ smallest _ = error "SortedList: Nil"
 instance Ord a => Semigroup (SortedList a) where
   -- | Merge two sorted lists
   -- DO NOT USE Data.List and its sort! it should be O(n+m) complexity
-  (<>) = undefined
+  (<>) l Nil = l
+  (<>) Nil l = l
+  (<>) l@(l1 :<$ xl) m@(m1 :<$ xm) = if l1 < m1 then l1 :<$ ((<>) xl m) else m1 :<$ ((<>) l xm)
+
 
 instance Ord a => Monoid (SortedList a) where
-  mempty = undefined
+  mempty = Nil
   mappend = (<>)
 
 instance Functor SortedList where
   -- | Apply function over sorted list
-  fmap = undefined
+  fmap _ Nil = Nil
+  fmap f l@(l1 :<$ xl) = (f l1) :<$ (fmap f xl)
 
 instance Applicative SortedList where
-  pure  = undefined
+  pure a = a :<$ Nil
   -- | Apply all functions to elements in sorted list
-  (<*>) = undefined
+  (<*>) Nil _ = Nil
+  (<*>) _ Nil = Nil
+  (<*>) f@(f1 :<$ xf) l@(l1 :<$ xl) = (fmap f1 l) `myConcat` (xf <*> l)
+
+myConcat :: SortedList a -> SortedList a -> SortedList a
+myConcat Nil m = m
+myConcat l@(l1 :<$ Nil) m = l1 :<$ m
+myConcat l@(l1 :<$ xl) m = l1 :<$ (myConcat xl m)
 
 instance Monad SortedList where
   -- | Apply on sorted list if valid and not empty
-  (>>=)  = undefined
+  return a = a :<$ Nil
+  (>>) Nil _ = Nil
+  (>>) _ Nil = Nil
+  (>>) l m = myConcat m m
+  (>>=) Nil _ = Nil
+  (>>=) l@(l1 :<$ xl) f = (f l1) `myConcat` ((>>=) xl f)
